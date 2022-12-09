@@ -4,9 +4,9 @@ const router = express.Router();
 
 const { contacts: ctrl } = require("../../controllers");
 const { validation, ctrlWrapper } = require("../../middlewares");
-const { contactSchema } = require("../../schemas");
+const { schemas } = require("../../models/contact");
 
-const validateMiddleware = validation(contactSchema);
+const validateMiddleware = validation(schemas.addContactSchema);
 
 router.get("/", ctrlWrapper(ctrl.getAll));
 
