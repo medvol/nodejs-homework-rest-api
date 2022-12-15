@@ -1,5 +1,9 @@
 const { Schema, model } = require("mongoose");
 const Joi = require("joi");
+const bcrypt = require("bcryptjs");
+const handleErrors = require("../helpers/handleSchemaErrors");
+
+const subscription = ["starter", "pro", "business"];
 
 const userSchema = new Schema(
   {
@@ -14,7 +18,7 @@ const userSchema = new Schema(
     },
     subscription: {
       type: String,
-      enum: ["starter", "pro", "business"],
+      enum: subscription,
       default: "starter",
     },
     token: String,
@@ -22,7 +26,26 @@ const userSchema = new Schema(
   { versionKey: false, timestamps: true }
 );
 
-const addUserSchema = Joi.object({
+userSchema.methods.setPassword = function (password) {
+  this.password = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
+};
+
+userSchema.methods.validPassword = function (password) {
+  return bcrypt.compareSync(password, this.password);
+};
+
+userSchema.post("save", handleErrors);
+
+const registerUserSchema = Joi.object({
+  password: Joi.string().min(3).max(30).required(),
+  email: Joi.string().email({
+    minDomainSegments: 2,
+    tlds: { allow: ["com", "net"] },
+  }),
+  subscription: Joi.string().valid(...subscription),
+});
+
+const loginUserSchema = Joi.object({
   password: Joi.string().min(3).max(30).required(),
   email: Joi.string().email({
     minDomainSegments: 2,
@@ -30,9 +53,14 @@ const addUserSchema = Joi.object({
   }),
 });
 
+const schemas = {
+  registerUserSchema,
+  loginUserSchema,
+};
+
 const User = model("user", userSchema);
 
 module.exports = {
   User,
-  addUserSchema,
+  schemas,
 };
