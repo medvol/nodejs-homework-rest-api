@@ -8,7 +8,9 @@ const login = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
 
-  if (!user || !user.validPassword(password)) {
+  const validPassword = await user.validPassword(password);
+
+  if (!user || !validPassword) {
     throw new Unauthorized("Email or password is wrong");
   }
   const payload = {

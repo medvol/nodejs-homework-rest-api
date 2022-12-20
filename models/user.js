@@ -23,18 +23,19 @@ const userSchema = new Schema(
     },
     token: {
       type: String,
-      default: null
+      default: null,
     },
   },
   { versionKey: false, timestamps: true }
 );
 
-userSchema.methods.setPassword = function (password) {
-  this.password = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
+userSchema.methods.setPassword = async function (password) {
+  this.password = await bcrypt.hash(password, 10);
 };
 
-userSchema.methods.validPassword = function (password) {
-  return bcrypt.compareSync(password, this.password);
+userSchema.methods.validPassword = async function (password) {
+  const comparePassword = await bcrypt.compare(password, this.password);
+  return comparePassword;
 };
 
 userSchema.post("save", handleErrors);
