@@ -3,6 +3,13 @@ const request = require("supertest");
 const login = require("./login");
 const app = require("../../app");
 require("dotenv").config();
+const {
+  expect,
+  test,
+  describe,
+  beforeAll,
+  afterAll,
+} = require("@jest/globals");
 
 const { validationBody } = require("../../middlewares");
 const { schemas } = require("../../models/user");
