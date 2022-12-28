@@ -39,24 +39,43 @@ describe("test login controller", () => {
     server.close();
   });
   test("return response status 200", async () => {
-    require("dotenv").config();
-    const response = await request(app).post("/api/users/login").send(authUser);
-    expect(response.status).toBe(200);
+    try {
+      require("dotenv").config();
+      const response = await request(app)
+        .post("/api/users/login")
+        .send(authUser);
+      expect(response.status).toBe(200);
+    } catch (error) {
+      console.log(error.message);
+    }
   });
 
   test("return token", async () => {
-    require("dotenv").config();
-    const response = await request(app).post("/api/users/login").send(authUser);
-    expect(response.body.token).toBeTruthy();
+    try {
+      require("dotenv").config();
+      const response = await request(app)
+        .post("/api/users/login")
+        .send(authUser);
+      expect(response.body.token).toBeTruthy();
+    } catch (error) {
+      console.log(error.message);
+    }
   });
 
   test("return user object with keys 'email' and 'subscription' and data type string", async () => {
-    const response = await request(app).post("/api/users/login").send(authUser);
-    expect(response.body.user).toStrictEqual(
-      expect.objectContaining({
-        email: expect.any(String),
-        subscription: expect.any(String),
-      })
-    );
+    try {
+      const response = await request(app)
+        .post("/api/users/login")
+        .send(authUser);
+
+      expect(response.body.user).toStrictEqual(
+        expect.objectContaining({
+          email: expect.any(String),
+          subscription: expect.any(String),
+        })
+      );
+    } catch (error) {
+      console.log(error.message);
+    }
   });
 });

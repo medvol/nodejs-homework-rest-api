@@ -3,7 +3,7 @@ const gravatar = require("gravatar");
 const { v4 } = require("uuid");
 
 const { User } = require("../../models/user");
-const sendEmail = require("../../helpers/sendEmail");
+const { sendEmail, createVerifyEmail } = require("../../helpers");
 
 const register = async (req, res) => {
   const { email, password } = req.body;
@@ -19,11 +19,8 @@ const register = async (req, res) => {
   await newUser.setPassword(password);
   await newUser.save();
 
-  const mail = {
-    to: email,
-    subject: "Please Verify Your Email",
-    html: `<a href="http://localhost:3000/api/users/verify/${verificationToken}" target="_blank">Let's verify your email</a>`,
-  };
+  const mail = createVerifyEmail(email, verificationToken);
+
   await sendEmail(mail);
 
   res.status(201).json({
